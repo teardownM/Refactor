@@ -40,6 +40,10 @@ project "Teardown"
         "detours"
     }
 
+    postbuildcommands {
+        "copy /Y \"$(TargetDir)Teardown.dll\" \"$(SolutionDir)Launcher\\Build\\$(Platform)\\$(Configuration)\\Launcher\\Teardown.dll\""
+    }
+
     filter "system:windows"
         systemversion "latest"
 
