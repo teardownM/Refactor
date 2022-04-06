@@ -107,7 +107,6 @@ int LaunchGame(PROCESS_INFORMATION* ProcInfo, const char* cExePath, const char* 
 
 int main() {
     const char* cTeardownPath = GetGamePath();
-    std::cout << "Teardown path: " << cTeardownPath << '\n';
 
     if (cTeardownPath == 0) {
         MessageBoxA(nullptr, "Unable to find Teardown installation", "Error", MB_ICONERROR | MB_OK);
