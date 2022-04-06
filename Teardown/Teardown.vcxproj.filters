@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{6917EFFE-D5F6-6D9A-DE0E-F9704A6DD4FB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Functions">
+      <UniqueIdentifier>{116BEF51-7D81-EDE7-C6F8-7809324EBE6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Util">
+      <UniqueIdentifier>{5638664B-429B-F5EF-EB20-2EA6D762C172}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Include">
+      <UniqueIdentifier>{CF9360E4-BB61-54EA-A4F5-C4109062304F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Shared\Include\detours.h">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Console.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Constructors.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Entities.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Entity.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Functions.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Functions\Memory.h">
+      <Filter>Include\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Functions\Misc.h">
+      <Filter>Include\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Globals.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Logger.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Memory.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Misc.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Registry.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scene.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Signatures.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Tags.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Util\Math.h">
+      <Filter>Include\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\small_string.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\small_vector.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\DLLMain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Functions.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Logger.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Memory.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
