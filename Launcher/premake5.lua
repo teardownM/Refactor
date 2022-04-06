@@ -1,4 +1,6 @@
 ---@diagnostic disable: undefined-global
+require('vstudio')
+
 project "Launcher"
     kind "ConsoleApp"
     language "C++"
@@ -9,6 +11,7 @@ project "Launcher"
 
     targetdir ("Build/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}")
     objdir ("Build/Intermediate/%{prj.name}")
+    debugdir("Build/x64/Debug/Launcher")
 
     files {
         "Include/**.h",
