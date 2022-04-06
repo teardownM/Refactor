@@ -235,7 +235,6 @@ int main() {
     }
 
     ResumeThread(ProcInfo.hThread);
-	WaitForSingleObject(ProcInfo.hProcess, INFINITE);
 
 	CloseHandle(ProcInfo.hProcess);
 	CloseHandle(ProcInfo.hThread);
