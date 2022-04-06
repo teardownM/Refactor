@@ -1,6 +1,4 @@
 ---@diagnostic disable: undefined-global
-require('vstudio')
-
 project "Launcher"
     kind "ConsoleApp"
     language "C++"
