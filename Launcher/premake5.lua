@@ -7,9 +7,9 @@ project "Launcher"
     characterset "Unicode"
     callingconvention "Cdecl"
 
-    targetdir ("Build/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}")
-    objdir ("Build/Intermediate/%{prj.name}")
-    debugdir("Build/x64/Debug/Launcher")
+    targetdir ("../Build/%{cfg.buildcfg}/%{prj.name}")
+    objdir ("../Build/Intermediate/%{cfg.buildcfg}/%{prj.name}")
+    debugdir("../Build/%{cfg.buildcfg}/%{prj.name}")
 
     files {
         "Include/**.h",

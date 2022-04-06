@@ -21,11 +21,6 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
     LOG_DEBUG("Starting...");
 	
     g_Module = GetModuleHandle(nullptr);
-    const HWND windowHandle = FindWindowA(nullptr, "Teardown");
-    if (windowHandle == nullptr) {
-         LOG_ERROR("Failed to find window handle!");
-        return 0;
-    }
 
     LOG_DEBUG("Getting Addresses...");
     Teardown::GetFunctionAddresses();

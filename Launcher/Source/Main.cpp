@@ -7,6 +7,8 @@
 #include <fstream>
 #include <string>
 #include <regex>
+#include <chrono>
+#include <thread>
 
 const char* GetGamePath() {
     char cSteamPath[MAX_PATH];

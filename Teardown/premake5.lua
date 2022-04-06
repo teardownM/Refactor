@@ -16,8 +16,10 @@ project "Teardown"
         "TDM_EXPORTS",
     }
 
-    targetdir ("Build/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}")
-    objdir ("Build/Intermediate/%{prj.name}")
+    targetdir ("../Build/%{cfg.buildcfg}/%{prj.name}")
+    objdir ("../Build/Intermediate/%{cfg.buildcfg}/%{prj.name}")
+    debugdir("../Build/%{cfg.buildcfg}/Launcher")
+    debugcommand("../Build/%{cfg.buildcfg}/Launcher/Launcher.exe")
 
     files {
         "Include/**.h",
@@ -41,7 +43,7 @@ project "Teardown"
     }
 
     postbuildcommands {
-        "copy /Y \"$(TargetDir)Teardown.dll\" \"$(SolutionDir)Launcher\\Build\\$(Platform)\\$(Configuration)\\Launcher\\Teardown.dll\""
+        "copy /Y \"$(TargetDir)Teardown.dll\" \"$(SolutionDir)Build\\$(Configuration)\\Launcher\\Teardown.dll\""
     }
 
     filter "system:windows"
