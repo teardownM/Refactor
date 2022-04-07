@@ -109,26 +109,30 @@ int LaunchGame(PROCESS_INFORMATION* ProcInfo, const char* cExePath, const char* 
 
 int main() {
     const char* cTeardownPath = GetGamePath();
+    char cDLLPath[MAX_PATH];
+    char cCurrentPath[MAX_PATH];
+    char cExePath[MAX_PATH];
 
-    if (cTeardownPath == 0) {
+    PROCESS_INFORMATION ProcInfo;
+    STARTUPINFOA StartupInfo;
+
+    ZeroMemory(&ProcInfo, sizeof(ProcInfo));
+    ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+
+    if (!cTeardownPath) {
         MessageBoxA(nullptr, "Unable to find Teardown installation", "Error", MB_ICONERROR | MB_OK);
         return 1;
     }
 
-    char cCurrentPath[MAX_PATH];
     GetCurrentDirectoryA(MAX_PATH, cCurrentPath);
-
-    char cDLLPath[MAX_PATH];
     sprintf_s(cDLLPath, "%s\\%s", cCurrentPath, "Teardown.dll");
     const char* cDLLPath2 = cDLLPath;
-
 
     if (!std::filesystem::exists(cDLLPath)) {
         MessageBoxA(nullptr, "Unable to find Teardown.dll", "Error", MB_ICONERROR | MB_OK);
         return 1;
     }
 
-    char cExePath[MAX_PATH];
     sprintf_s(cExePath, "%s\\%s", cTeardownPath, "teardown.exe");
     if (!std::filesystem::exists(cExePath)) {
         MessageBoxA(nullptr, "Unable to find teardown.exe", "Error", MB_ICONERROR | MB_OK);
@@ -157,18 +161,14 @@ int main() {
 
     SetEnvironmentVariableA("SteamAppId", "1167630"); // Set SteamAppId var to initialize SteamAPI
 
-    PROCESS_INFORMATION ProcInfo;
-    STARTUPINFOA StartupInfo;
-
-    ZeroMemory(&ProcInfo, sizeof(ProcInfo));
-    ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-
     const DWORD PID = GetPIDByName(L"Teardown.exe");
 
     if (PID == 0) {
+        // Launch the game
         std::cout << "Launching Game\n";
         LaunchGame(&ProcInfo, cExePath, cTeardownPath);
     } else {
+        // Attach to the game
     	ProcInfo.hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
         ProcInfo.dwProcessId = PID;
     }
