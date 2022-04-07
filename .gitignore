@@ -34,6 +34,10 @@ bld/
 [Ll]ogs/
 
 .vscode
+.idea
+*.cmake
+cmake-build-*/
+CMakeLists.txt
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
