@@ -41,10 +41,7 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
         return 1;
     }
 
-/*    LOG_DEBUG("Getting Addresses...");
-    Teardown::GetFunctionAddresses();*/
-
-//
+    Teardown::GetFunctionAddresses();
     return 0;
 }
 
