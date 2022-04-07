@@ -43,7 +43,7 @@ project "Teardown"
     }
 
     postbuildcommands {
-        "copy /Y \"$(TargetDir)Teardown.dll\" \"$(SolutionDir)Build\\$(Configuration)\\Launcher\\Teardown.dll\""
+        "copy \"$(SolutionDir)Build\\$(Configuration)\\Teardown\\Teardown.dll\" \"$(SolutionDir)Build\\$(Configuration)\\Launcher\\Teardown.dll\""
     }
 
     filter "system:windows"
