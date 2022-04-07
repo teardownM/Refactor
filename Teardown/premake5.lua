@@ -35,7 +35,7 @@ project "Teardown"
     }
 
     libdirs {
-        "../Shared/Lib/%{cfg.buildcfg}"
+        "../Shared/Lib"
     }
 
     links {

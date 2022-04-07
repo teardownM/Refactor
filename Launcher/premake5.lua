@@ -25,7 +25,7 @@ project "Launcher"
     }
 
     libdirs {
-        "../Shared/Lib/%{cfg.buildcfg}"
+        "../Shared/Lib"
     }
 
     links {
