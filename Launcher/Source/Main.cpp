@@ -19,21 +19,21 @@ const char* GetGamePath() {
 		if (RegQueryValueExA(SteamKey, "InstallPath", 0, 0, reinterpret_cast<LPBYTE>(&cSteamPath), &dwLen) == ERROR_SUCCESS) {
 			cSteamPath[dwLen - 1] = '\0';
         } else {
-			return 0;
+			return nullptr;
         }
 
 		RegCloseKey(SteamKey);
 	} else {
-		return 0;
+		return nullptr;
     }
 
     std::string sSteamPath = std::string(cSteamPath);
 	if (sSteamPath.empty())
-		return 0;
+		return nullptr;
 
     char* cTeardownPath = new char[MAX_PATH];
 
-	std::string sTeardownPath = sSteamPath + "\\steamapps\\common\\Teardown";
+	std::string sTeardownPath = sSteamPath + R"(\steamapps\common\Teardown)";
 	if (std::filesystem::exists(sTeardownPath + "\\teardown.exe")) {
 		memcpy(cTeardownPath, sTeardownPath.c_str(), MAX_PATH);
 		return cTeardownPath;
@@ -43,7 +43,7 @@ const char* GetGamePath() {
     std::ifstream ConfigFile(sSteamPath + "\\steamapps\\libraryfolders.vdf");
 	if (!ConfigFile.is_open()) {
         std::cerr << "Failed to open libraryfolders.vdf!" << std::endl;
-		return 0;
+		return nullptr;
     }
 
 	std::string sConfigContent = std::string(std::istreambuf_iterator<char>(ConfigFile), std::istreambuf_iterator<char>());
@@ -52,7 +52,7 @@ const char* GetGamePath() {
     std::regex_iterator LibraryFolders = std::sregex_iterator(sConfigContent.begin(), sConfigContent.end(), DirRegex);
 
 	for (std::sregex_iterator Match = LibraryFolders; Match != std::sregex_iterator(); ++Match) {
-		sTeardownPath = (*Match)[1].str() + "\\steamapps\\common\\Teardown";
+		sTeardownPath = (*Match)[1].str() + R"(\steamapps\common\Teardown)";
 
 		if (std::filesystem::exists(sTeardownPath)) {
 			sTeardownPath.replace(sTeardownPath.find("\\\\"), 2, "\\");
@@ -64,7 +64,7 @@ const char* GetGamePath() {
 		}
 	}
 
-    return 0;
+    return nullptr;
 }
 
 DWORD GetPIDByName(const std::wstring& name) {
