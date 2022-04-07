@@ -1,5 +1,10 @@
 ## TeardownM Refactor
 ### Visual Studio
+Options:
+> vs2022  
+> vs2019  
+>   
+> Others can be found [here](https://premake.github.io/docs/Using-Premake) (not recommended)
 ```
 .\premake5.exe vs2022
 ```
