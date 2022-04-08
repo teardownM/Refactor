@@ -1,5 +1,3 @@
-#pragma execution_character_set("utf-8")
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <filesystem>
@@ -15,7 +13,7 @@ const char* GetGamePath() {
     char cSteamPath[MAX_PATH];
 	HKEY SteamKey;
 
-	if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Valve\\Steam", 0, KEY_QUERY_VALUE, &SteamKey) == ERROR_SUCCESS) {
+	if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, R"(SOFTWARE\WOW6432Node\Valve\Steam)", 0, KEY_QUERY_VALUE, &SteamKey) == ERROR_SUCCESS) {
 		DWORD dwLen = MAX_PATH;
 		if (RegQueryValueExA(SteamKey, "InstallPath", nullptr, nullptr, reinterpret_cast<LPBYTE>(&cSteamPath), &dwLen) == ERROR_SUCCESS) {
 			cSteamPath[dwLen - 1] = '\0';
@@ -85,29 +83,6 @@ DWORD GetPIDByName(const std::wstring& name) {
     return 0;
 };
 
-int LaunchGame(PROCESS_INFORMATION* ProcInfo, const char* cExePath, const char* cTeardownPath) {
-	STARTUPINFOA StartupInfo;
-	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-
-	if (!CreateProcessA(nullptr, const_cast<LPSTR>(cExePath), nullptr, nullptr, TRUE, CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED, nullptr, cTeardownPath, &StartupInfo, ProcInfo)) {
-        DWORD dwError = GetLastError();
-        LPVOID lpMsgBuf;
-        FormatMessageA(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER |
-            FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr,
-            dwError,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPSTR)&lpMsgBuf,
-            0, nullptr);
-        MessageBoxA(nullptr, (LPCSTR)lpMsgBuf, "Error Starting Game", MB_ICONERROR | MB_OK);
-		return 1;
-	}
-
-    return 0;
-}
-
 void Shutdown(const std::string& message, int exitCode) {
     spdlog::error(message);
     std::cin.get();
@@ -118,19 +93,35 @@ void ShutdownLastError(const std::string& message) {
     DWORD dwError = GetLastError();
     LPVOID lpMsgBuf;
     FormatMessageA(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr,
-        dwError,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR)&lpMsgBuf,
-        0, nullptr);
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            nullptr,
+            dwError,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPSTR)&lpMsgBuf,
+            0, nullptr);
     Shutdown(message + ": " + (LPCSTR)lpMsgBuf, 1);
 }
 
+int LaunchGame(PROCESS_INFORMATION* ProcInfo, const char* cExePath, const char* cTeardownPath) {
+	STARTUPINFOA StartupInfo;
+	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+
+	if (!CreateProcessA(nullptr, const_cast<LPSTR>(cExePath), nullptr, nullptr, TRUE, CREATE_DEFAULT_ERROR_MODE | CREATE_SUSPENDED, nullptr, cTeardownPath, &StartupInfo, ProcInfo)) {
+        ShutdownLastError("CreateProcessA Failed");
+		return 1;
+	}
+
+    return 0;
+}
+
 int main() {
+#ifdef _DEBUG
     spdlog::set_level(spdlog::level::debug);
+#else
+    spdlog::set_level(spdlog::level::info);
+#endif
 
     const char* cTeardownPath = GetGamePath();
     char cDLLPath[MAX_PATH];
