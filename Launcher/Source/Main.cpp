@@ -35,7 +35,7 @@ const char* GetGamePath() {
     char* cTeardownPath = new char[MAX_PATH];
 
 	std::string sTeardownPath = sSteamPath + R"(\steamapps\common\Teardown)";
-	if (std::filesystem::exists(sTeardownPath + "\\teardown.unpacked.exe")) {
+	if (std::filesystem::exists(sTeardownPath + "\\teardown.exe")) {
 		memcpy(cTeardownPath, sTeardownPath.c_str(), MAX_PATH);
 		return cTeardownPath;
 	}
@@ -58,7 +58,7 @@ const char* GetGamePath() {
 		if (std::filesystem::exists(sTeardownPath)) {
 			sTeardownPath.replace(sTeardownPath.find("\\\\"), 2, "\\");
 
-			if (std::filesystem::exists(sTeardownPath + "\\teardown.unpacked.exe")) {
+			if (std::filesystem::exists(sTeardownPath + "\\teardown.exe")) {
 				memcpy(cTeardownPath, sTeardownPath.c_str(), MAX_PATH);
 				return cTeardownPath;
 			}
@@ -159,7 +159,7 @@ int main() {
         return 1;
     }
 
-    sprintf_s(cExePath, "%s\\%s", cTeardownPath, "teardown.unpacked.exe");
+    sprintf_s(cExePath, "%s\\%s", cTeardownPath, "teardown.exe");
     if (!std::filesystem::exists(cExePath)) {
         Shutdown("Unable to find installation of teardown", 1);
         return 1;
