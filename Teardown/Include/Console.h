@@ -2,24 +2,21 @@
 
 #include "Logger.h"
 
-namespace Utilities {
-    namespace Console {
-        static FILE* console;
+namespace Utilities::Console {
+    static FILE *console;
 
-        static void Initialize() {
-            AllocConsole();
-        
-            freopen_s(&console, "CONOUT$", "w", stdout);
-            freopen_s(&console, "CONOUT$", "w", stderr);
-            freopen_s(&console, "CONIN$", "r", stdin);
+    static void Initialize() {
+        AllocConsole();
 
-            SetConsoleTitleA("Teardown Multiplayer | DEBUG");
-            Logger::Initialize();
-        }
+        freopen_s(&console, "CONOUT$", "w", stdout);
+        freopen_s(&console, "CONOUT$", "w", stderr);
+        freopen_s(&console, "CONIN$", "r", stdin);
 
-        static void Close() {
-            fclose(console);
-            FreeConsole();
-        }
+        SetConsoleTitleA("Teardown Multiplayer | DEBUG");
+    }
+
+    static void Close() {
+        fclose(console);
+        FreeConsole();
     }
 }

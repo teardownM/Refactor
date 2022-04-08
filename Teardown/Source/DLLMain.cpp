@@ -25,13 +25,14 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
     ::Utilities::Console::Initialize();
     Teardown::GetFunctionAddresses();
 #endif
+    Logger::Initialize();
 
     Teardown::Path = std::filesystem::current_path().string();
-//    if (Teardown::Menu::Set() != 0) {
-//        LOG_ERROR("Failed to create menu");
-//        Shutdown(g_Module, 1);
-//        return 1;
-//    }
+    if (Teardown::Menu::Set() != 0) {
+        LOG_ERROR("Failed to create menu");
+        Shutdown(g_Module, 1);
+        return 1;
+    }
 	
     return 0;
 }
