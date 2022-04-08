@@ -1,14 +1,15 @@
+#pragma execution_character_set("utf-8")
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include "detours.h"
 #include <filesystem>
 #include <TlHelp32.h>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <regex>
-#include <chrono>
-#include <thread>
+
+#include "spdlog/spdlog.h"
 
 const char* GetGamePath() {
     char cSteamPath[MAX_PATH];
@@ -16,7 +17,7 @@ const char* GetGamePath() {
 
 	if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Valve\\Steam", 0, KEY_QUERY_VALUE, &SteamKey) == ERROR_SUCCESS) {
 		DWORD dwLen = MAX_PATH;
-		if (RegQueryValueExA(SteamKey, "InstallPath", 0, 0, reinterpret_cast<LPBYTE>(&cSteamPath), &dwLen) == ERROR_SUCCESS) {
+		if (RegQueryValueExA(SteamKey, "InstallPath", nullptr, nullptr, reinterpret_cast<LPBYTE>(&cSteamPath), &dwLen) == ERROR_SUCCESS) {
 			cSteamPath[dwLen - 1] = '\0';
         } else {
 			return nullptr;
@@ -34,7 +35,7 @@ const char* GetGamePath() {
     char* cTeardownPath = new char[MAX_PATH];
 
 	std::string sTeardownPath = sSteamPath + R"(\steamapps\common\Teardown)";
-	if (std::filesystem::exists(sTeardownPath + "\\teardown.exe")) {
+	if (std::filesystem::exists(sTeardownPath + "\\teardown.unpacked.exe")) {
 		memcpy(cTeardownPath, sTeardownPath.c_str(), MAX_PATH);
 		return cTeardownPath;
 	}
@@ -57,7 +58,7 @@ const char* GetGamePath() {
 		if (std::filesystem::exists(sTeardownPath)) {
 			sTeardownPath.replace(sTeardownPath.find("\\\\"), 2, "\\");
 
-			if (std::filesystem::exists(sTeardownPath + "\\teardown.exe")) {
+			if (std::filesystem::exists(sTeardownPath + "\\teardown.unpacked.exe")) {
 				memcpy(cTeardownPath, sTeardownPath.c_str(), MAX_PATH);
 				return cTeardownPath;
 			}
@@ -107,7 +108,30 @@ int LaunchGame(PROCESS_INFORMATION* ProcInfo, const char* cExePath, const char* 
     return 0;
 }
 
+void Shutdown(const std::string& message, int exitCode) {
+    spdlog::error(message);
+    std::cin.get();
+    exit(exitCode);
+}
+
+void ShutdownLastError(const std::string& message) {
+    DWORD dwError = GetLastError();
+    LPVOID lpMsgBuf;
+    FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        dwError,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPSTR)&lpMsgBuf,
+        0, nullptr);
+    Shutdown(message + ": " + (LPCSTR)lpMsgBuf, 1);
+}
+
 int main() {
+    spdlog::set_level(spdlog::level::debug);
+
     const char* cTeardownPath = GetGamePath();
     char cDLLPath[MAX_PATH];
     char cCurrentPath[MAX_PATH];
@@ -120,7 +144,7 @@ int main() {
     ZeroMemory(&StartupInfo, sizeof(StartupInfo));
 
     if (!cTeardownPath) {
-        MessageBoxA(nullptr, "Unable to find Teardown installation", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Unable to find installation of teardown", 1);
         return 1;
     }
 
@@ -128,21 +152,26 @@ int main() {
     sprintf_s(cDLLPath, "%s\\%s", cCurrentPath, "Teardown.dll");
     const char* cDLLPath2 = cDLLPath;
 
+    spdlog::debug("DllPath: {}", cDLLPath2);
+
     if (!std::filesystem::exists(cDLLPath)) {
-        MessageBoxA(nullptr, "Unable to find Teardown.dll", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Unable to find Teardown.dll", 1);
         return 1;
     }
 
-    sprintf_s(cExePath, "%s\\%s", cTeardownPath, "teardown.exe");
+    sprintf_s(cExePath, "%s\\%s", cTeardownPath, "teardown.unpacked.exe");
     if (!std::filesystem::exists(cExePath)) {
-        MessageBoxA(nullptr, "Unable to find teardown.exe", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Unable to find installation of teardown", 1);
         return 1;
     }
+
+    spdlog::debug("ExePath: {}", cExePath);
+    spdlog::debug("Teardown Path: {}", cTeardownPath);
 
     FILE* TeardownExe;
     fopen_s(&TeardownExe, cExePath, "rb");
     if (TeardownExe == nullptr) {
-        MessageBoxA(nullptr, "Unable to open teardown.exe", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Failed opening Teardown", 1);
         return 1;
     }
 
@@ -152,7 +181,7 @@ int main() {
 
     void* pExeBuffer = malloc(lFileSize);
     if (pExeBuffer == nullptr) {
-        MessageBoxA(nullptr, "Unable to allocate memory for exe buffer", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Failed Getting Teardown Filesize", 1);
         return 1;
     }
 
@@ -165,16 +194,20 @@ int main() {
 
     if (PID == 0) {
         // Launch the game
-        std::cout << "Launching Game\n";
+        spdlog::info("Launching Teardown");
         LaunchGame(&ProcInfo, cExePath, cTeardownPath);
     } else {
         // Attach to the game
+        spdlog::info("Attaching to Teardown");
     	ProcInfo.hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
         ProcInfo.dwProcessId = PID;
+        spdlog::debug("PID: {}", PID);
     }
 
+    spdlog::debug("hProcess: {:p}", ProcInfo.hProcess);
+
     if (!ProcInfo.hProcess) {
-        MessageBoxA(nullptr, "Unable to launch game", "Error", MB_ICONERROR | MB_OK);
+        Shutdown("Failed launching/attaching to Teardown", 1);
         return 1;
     }
 
@@ -182,44 +215,24 @@ int main() {
 
     // Allocate memory for the DLL
     const LPVOID pRemoteDLL = VirtualAllocEx(ProcInfo.hProcess, nullptr, dwDLLPath2Length + 1, MEM_COMMIT, PAGE_READWRITE);
+    spdlog::debug("Allocated {} bytes for DLL", dwDLLPath2Length + 1);
+    spdlog::debug("pRemoteDLL: {:p}", pRemoteDLL);
     if (!pRemoteDLL) {
-        const DWORD dwError = GetLastError();
-        LPVOID lpMsgBuf;
-        FormatMessageA(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER |
-            FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr,
-            dwError,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            reinterpret_cast<LPSTR>(&lpMsgBuf),
-            0, nullptr);
-        MessageBoxA(nullptr, static_cast<LPCSTR>(lpMsgBuf), "VirtualAllocEx Failed", MB_ICONERROR | MB_OK);
+        ShutdownLastError("VirtualAllocEx Failed");
         return 1;
     }
 
     // Write the DLL to the process
     if (!WriteProcessMemory(ProcInfo.hProcess, pRemoteDLL, cDLLPath2, dwDLLPath2Length + 1, nullptr)) {
-        // get last error
-        const DWORD dwError = GetLastError();
-        LPVOID lpMsgBuf;
-        FormatMessageA(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER |
-            FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS,
-            nullptr,
-            dwError,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            reinterpret_cast<LPSTR>(&lpMsgBuf),
-            0, nullptr);
-        MessageBoxA(nullptr, static_cast<LPCSTR>(lpMsgBuf), "WriteProcessMemory Failed", MB_ICONERROR | MB_OK);
+        ShutdownLastError("WriteProcessMemory Failed");
         return 1;
     }
 
     // Get the address of LoadLibraryA
     const auto pLoadLibraryA = reinterpret_cast<LPVOID>(GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA"));
+    spdlog::debug("pLoadLibraryA: {:p}", pLoadLibraryA);
     if (!pLoadLibraryA) {
-        MessageBoxA(nullptr, "GetProcAddress failed", "Error", MB_ICONERROR | MB_OK);
+        ShutdownLastError("GetProcAddress Failed");
         return 1;
     }
 
@@ -229,8 +242,10 @@ int main() {
         CreateRemoteThread(ProcInfo.hProcess, nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(pLoadLibraryA), pRemoteDLL, 0, nullptr);
     }
 
+    spdlog::debug("RemoteThread: {:p}", ProcInfo.hThread);
+
     if (!ProcInfo.hThread) {
-        MessageBoxA(nullptr, "CreateRemoteThread failed", "Error", MB_ICONERROR | MB_OK);
+        ShutdownLastError("CreateRemoteThread Failed");
         return 1;
     }
 
@@ -238,6 +253,21 @@ int main() {
 
 	CloseHandle(ProcInfo.hProcess);
 	CloseHandle(ProcInfo.hThread);
+
+    spdlog::info("Teardown Multiplayer has been Loaded! Have fun");
+
+    int iTimeUntilShutdown;
+#ifdef _DEBUG
+    iTimeUntilShutdown = 10000;
+#else
+    iTimeUntilShutdown = 5000;
+#endif
+
+    while (iTimeUntilShutdown > 0) {
+        spdlog::info("Shutting down in {} seconds", iTimeUntilShutdown / 1000);
+        Sleep(1000);
+        iTimeUntilShutdown -= 1000;
+    }
 
     return 0;
 }

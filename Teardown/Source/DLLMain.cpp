@@ -9,10 +9,10 @@
 __declspec(dllexport) int __stdcall _(void) { return 0; }
 
 void Shutdown(HMODULE hModule, DWORD reason) {
+    Teardown::Menu::Revert();
+
     if (!hModule)
         FreeLibraryAndExitThread(GetModuleHandle(nullptr), reason);
-
-    Teardown::Menu::Revert();
 #ifdef DEBUG
     ::Utilities::Console::Close();
 #endif
@@ -20,28 +20,19 @@ void Shutdown(HMODULE hModule, DWORD reason) {
 }
 
 DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
+    g_Module = GetModuleHandle(nullptr);
 #ifdef DEBUG
     ::Utilities::Console::Initialize();
-#else
-    #define LOG_TRACE(...)
-    #define LOG_DEBUG(...)
-    #define LOG_INFO(...)
-    #define LOG_WARN(...)
-    #define LOG_ERROR(...)
-    #define LOG_FATAL(...)
+    Teardown::GetFunctionAddresses();
 #endif
-    bool bRunning = true;
-
-    g_Module = GetModuleHandle(nullptr);
 
     Teardown::Path = std::filesystem::current_path().string();
-    if (Teardown::Menu::Set() != 0) {
-        LOG_ERROR("Failed to create menu");
-        Shutdown(g_Module, 1);
-        return 1;
-    }
-
-    Teardown::GetFunctionAddresses();
+//    if (Teardown::Menu::Set() != 0) {
+//        LOG_ERROR("Failed to create menu");
+//        Shutdown(g_Module, 1);
+//        return 1;
+//    }
+	
     return 0;
 }
 

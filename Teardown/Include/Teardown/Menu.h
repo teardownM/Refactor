@@ -2518,13 +2518,15 @@ namespace Teardown::Menu {
         static std::string OldMenuData;
 
         static int8_t Set() {
-            std::ifstream inMenuFile(Teardown::Path + "/data/ui/menu.lua");
-            if (!inMenuFile.is_open()) {
-                LOG_ERROR("Failed to open menu file: {}", Teardown::Path + "/data/ui/menu.lua");
-                return 1;
-            }
+            if (OldMenuData.empty()) {
+                std::ifstream inMenuFile(Teardown::Path + "/data/ui/menu.lua");
+                if (!inMenuFile.is_open()) {
+                    LOG_ERROR("Failed to open menu file: {}", Teardown::Path + "/data/ui/menu.lua");
+                    return 1;
+                }
 
-            Teardown::Menu::OldMenuData = std::string((std::istreambuf_iterator<char>(inMenuFile)), std::istreambuf_iterator<char>());
+                Teardown::Menu::OldMenuData = std::string((std::istreambuf_iterator<char>(inMenuFile)), std::istreambuf_iterator<char>());
+            }
 
             std::stringstream ss;
             ss << std::hex << std::uppercase << Teardown::Menu::MenuData;
@@ -2540,9 +2542,13 @@ namespace Teardown::Menu {
         }
 
         static void Revert() {
-            std::ofstream outMenuFile(Teardown::Path + "/data/ui/menu.lua");
-            outMenuFile << Teardown::Menu::OldMenuData << std::endl;
-            outMenuFile.close();
-            LOG_INFO("Restored menu.lua");
+            if (OldMenuData.empty())
+                return;
+
+            std::ofstream menuFile(Teardown::Path + "/data/ui/menu.lua");
+            menuFile << OldMenuData << std::endl;
+            menuFile.close();
+
+            LOG_DEBUG("Reverted menu.lua");
         }
     }
