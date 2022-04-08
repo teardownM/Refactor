@@ -12,7 +12,7 @@ void Logger::Initialize() {
 	spdlog::register_logger(m_Logger);
 
 #ifdef DEBUG
-    m_Logger->set_level(spdlog::level::trace);
+    m_Logger->set_level(spdlog::level::debug);
 #else
     m_Logger->set_level(spdlog::level::info);
 #endif

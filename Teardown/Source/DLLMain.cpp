@@ -21,11 +21,14 @@ void Shutdown(HMODULE hModule, DWORD reason) {
 
 DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
     g_Module = GetModuleHandle(nullptr);
-#ifdef DEBUG
+
+#ifdef _DEBUG
     ::Utilities::Console::Initialize();
-    Teardown::GetFunctionAddresses();
-#endif
     Logger::Initialize();
+    Teardown::GetFunctionAddresses();
+#else
+    Logger::Initialize();
+#endif
 
     Teardown::Path = std::filesystem::current_path().string();
     if (Teardown::Menu::Set() != 0) {
