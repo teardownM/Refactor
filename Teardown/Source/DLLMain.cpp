@@ -24,11 +24,10 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
 
 #ifdef _DEBUG
     ::Utilities::Console::Initialize();
+#endif
+
     Logger::Initialize();
     Teardown::GetFunctionAddresses();
-#else
-    Logger::Initialize();
-#endif
 
     Teardown::Path = std::filesystem::current_path().string();
     if (Teardown::Menu::Set() != 0) {
@@ -36,6 +35,8 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
         Shutdown(g_Module, 1);
         return 1;
     }
+
+    LOG_INFO("We're injected bois");
 	
     return 0;
 }
