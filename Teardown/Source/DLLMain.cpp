@@ -1,18 +1,20 @@
-#include "Functions.h"
-#include "Signatures.h"
+#include <filesystem>
+
 #include "Globals.h"
 #include "Console.h"
-#include "detours.h"
-#include <filesystem>
+
+#include "Teardown/Functions.h"
 #include "Teardown/Menu.h"
 
-__declspec(dllexport) int __stdcall _(void) { return 0; }
+[[maybe_unused]] __declspec(dllexport) int __stdcall _() { return 0; }
 
+///////////////////////////////////
+///////     Functions     /////////
+///////////////////////////////////
 void Shutdown(HMODULE hModule, DWORD reason) {
     Teardown::Menu::Revert();
+    LOG_INFO("Goodbye :)\nExit code: {}", reason);
 
-    if (!hModule)
-        FreeLibraryAndExitThread(GetModuleHandle(nullptr), reason);
 #ifdef DEBUG
     ::Utilities::Console::Close();
 #endif
@@ -27,20 +29,24 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
 #endif
 
     Logger::Initialize();
-    Teardown::GetFunctionAddresses();
 
     Teardown::Path = std::filesystem::current_path().string();
     if (Teardown::Menu::Set() != 0) {
         LOG_ERROR("Failed to create menu");
-        Shutdown(g_Module, 1);
+        Shutdown(reinterpret_cast<HMODULE>(g_Module), 1);
         return 1;
     }
 
-    LOG_INFO("We're injected bois");
+    Teardown::GetFunctionAddresses();
+
+    LOG_INFO("We are in bois ;)");
 	
     return 0;
 }
 
+///////////////////////////////////
+///////     Entry Point     ///////
+///////////////////////////////////
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ulReason, [[maybe_unused]] LPVOID lpReserved) {
     switch (ulReason) {
         case DLL_PROCESS_ATTACH:
@@ -48,7 +54,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ulReason, [[maybe_unused]] LPVOID l
             CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(StartRoutine), hModule, 0, nullptr);
             break;
         case DLL_PROCESS_DETACH: {
-            Shutdown(g_Module, 0);
+            Shutdown(reinterpret_cast<HMODULE>(g_Module), 0);
             break;
         } default: break;
     }

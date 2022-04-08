@@ -22,7 +22,7 @@ bool bPatternCompare(const char* cData, const char* cPattern, const char* cMask)
 }
 
 void GetModuleInfo() {
-	MODULEINFO ModuleInfo = { 0 };
+	MODULEINFO ModuleInfo = { nullptr };
 	GetModuleInformation(GetCurrentProcess(), static_cast<HMODULE>(g_Module), &ModuleInfo, sizeof(MODULEINFO));
 
 	dwBaseAddress = reinterpret_cast<DWORD64>(g_Module);

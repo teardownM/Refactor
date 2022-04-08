@@ -2,6 +2,7 @@
 #include <fstream>
 
 namespace Teardown::Menu {
+#pragma region MenuData
     const static unsigned char MenuData[] = {
             35, 105, 110, 99, 108, 117, 100, 101, 32, 34, 103, 97, 109, 101, 46, 108, 117, 97, 34, 13,
             10, 35, 105, 110, 99, 108, 117, 100, 101, 32, 34, 111, 112, 116, 105, 111, 110, 115, 46,
@@ -2514,6 +2515,7 @@ namespace Teardown::Menu {
             32, 116, 104, 101, 110, 13, 10, 9, 9, 117, 112, 100, 97, 116, 101, 77, 111, 100, 115, 40,
             41, 13, 10, 9, 101, 110, 100, 13, 10, 101, 110, 100, 13, 10, 13, 10, 13, 10, 13, 10
     };
+#pragma endregion
 
     static std::string OldMenuData;
 

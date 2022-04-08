@@ -12,7 +12,10 @@ namespace Utilities::Console {
         freopen_s(&console, "CONOUT$", "w", stderr);
         freopen_s(&console, "CONIN$", "r", stdin);
 
-        SetConsoleTitleA("Teardown Multiplayer | DEBUG");
+        char cConsoleTitle[128];
+        sprintf_s(cConsoleTitle, "Teardown Multiplayer (%s)", g_Version);
+        
+        SetConsoleTitleA(cConsoleTitle);
     }
 
     static void Close() {

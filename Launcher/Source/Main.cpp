@@ -143,7 +143,8 @@ int main() {
     sprintf_s(cDLLPath, "%s\\%s", cCurrentPath, "Teardown.dll");
     const char* cDLLPath2 = cDLLPath;
 
-    spdlog::debug("DllPath: {}", cDLLPath2);
+    spdlog::debug("DLL Path: {}", cDLLPath2);
+    spdlog::debug("Current Path: {}", cCurrentPath);
 
     if (!std::filesystem::exists(cDLLPath)) {
         Shutdown("Unable to find Teardown.dll", 1);
