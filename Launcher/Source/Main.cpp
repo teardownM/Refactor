@@ -143,6 +143,16 @@ int main() {
     sprintf_s(cDLLPath, "%s\\%s", cCurrentPath, "Teardown.dll");
     const char* cDLLPath2 = cDLLPath;
 
+    char cTempPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, cTempPath);
+    sprintf_s(cTempPath, "%s\\%s", cTempPath, "tdl.txt");
+
+    std::ofstream TempFile(cTempPath);
+    TempFile << cCurrentPath;
+    TempFile.close();
+
+    spdlog::debug("Wrote tdl.txt to {}", cTempPath);
+
     spdlog::debug("DLL Path: {}", cDLLPath2);
     spdlog::debug("Current Path: {}", cCurrentPath);
 

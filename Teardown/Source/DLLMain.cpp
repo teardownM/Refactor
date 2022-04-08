@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "Console.h"
 
+#include "Launcher.h"
 #include "Teardown/Functions.h"
 #include "Teardown/Menu.h"
 
@@ -27,6 +28,10 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
 #ifdef _DEBUG
     ::Utilities::Console::Initialize();
 #endif
+
+    if (!Launcher::GetPath()) {
+        Shutdown(reinterpret_cast<HMODULE>(hModule), 1);
+    }
 
     Logger::Initialize();
 
