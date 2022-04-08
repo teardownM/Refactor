@@ -22,9 +22,9 @@ public:
     }
 
     template<typename... Args>
-    static void Fatal(fmt::format_string<Args...> fmt, Args &&...args) {
+    static void Critical(fmt::format_string<Args...> fmt, Args &&...args) {
         #ifdef _DEBUG
-                m_Logger->fatal(fmt, std::forward<Args>(args)...);
+                m_Logger->critical(fmt, std::forward<Args>(args)...);
         #else
                 auto msg = fmt::format(fmt, std::forward<Args>(args)...);
                 MessageBoxA(nullptr, msg.c_str(), "Fatal", MB_OK | MB_ICONERROR);
@@ -39,4 +39,4 @@ private:
 #define LOG_INFO(...) ::Logger::GetLogger()->info(__VA_ARGS__)
 #define LOG_WARN(...) ::Logger::GetLogger()->warn(__VA_ARGS__)
 #define LOG_ERROR(...) ::Logger::Error(__VA_ARGS__)
-#define LOG_FATAL(...) ::Logger::Fatal(__VA_ARGS__)
+#define LOG_CRITICAL(...) ::Logger::Critical(__VA_ARGS__)
