@@ -14,11 +14,9 @@
 Ref<spdlog::logger> Logger::m_Logger;
 
 void Logger::Initialize() {
-    // Create log directory if it doesn't exist
-
-    // Set log path to g_LauncherPath/logs
     std::string sLogPath = Launcher::sPath + std::string("\\Logs");
 
+    // Create log directory if it doesn't exist
     if (!std::filesystem::exists(sLogPath)) {
         std::filesystem::create_directory(sLogPath);
     } else {
