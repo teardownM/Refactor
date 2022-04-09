@@ -3,7 +3,7 @@ project "Launcher"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
-    staticruntime "on"
+    staticruntime "off"
     characterset "Unicode"
     callingconvention "Cdecl"
 
@@ -29,7 +29,16 @@ project "Launcher"
     }
 
     links {
-        "detours"
+        "detours",
+		"wsock32",
+		"Crypt32",
+		"bcrypt",
+		"winhttp",
+		"crypto%{cfg.buildcfg}",
+		"ssl%{cfg.buildcfg}",
+		"libprotobuf%{cfg.buildcfg}",
+		"cpprest%{cfg.buildcfg}",
+		"nakama-cpp%{cfg.buildcfg}"
     }
 
     filter "system:windows"

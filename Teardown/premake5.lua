@@ -3,7 +3,7 @@ project "Teardown"
     kind "SharedLib"
     language "C++"
     cppdialect "C++20"
-    staticruntime "on"
+    staticruntime "off"
     characterset "Unicode"
     callingconvention "Cdecl"
 
@@ -38,9 +38,19 @@ project "Teardown"
         "../Shared/Lib"
     }
 
-    links {
-        "detours"
-    }
+
+	links {
+		"detours",
+		"wsock32",
+		"Crypt32",
+		"bcrypt",
+		"winhttp",
+		"crypto%{cfg.buildcfg}",
+		"ssl%{cfg.buildcfg}",
+		"libprotobuf%{cfg.buildcfg}",
+		"cpprest%{cfg.buildcfg}",
+		"nakama-cpp%{cfg.buildcfg}"
+	}
 
     postbuildcommands {
         "copy \"$(SolutionDir)Build\\$(Configuration)\\Teardown\\Teardown.dll\" \"$(SolutionDir)Build\\$(Configuration)\\Launcher\\Teardown.dll\""

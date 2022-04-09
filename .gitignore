@@ -370,3 +370,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Vendor, linked dep. DO NOT REMOVE.
+Vendor
