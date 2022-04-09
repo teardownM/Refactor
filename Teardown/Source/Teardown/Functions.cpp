@@ -4,6 +4,7 @@
 #include "Teardown/Functions.h"
 #include "Teardown/Signatures.h"
 #include "Teardown/Constructors.h"
+#include "Teardown/Script.h"
 
 struct SScannable {
 	CSignature m_Sig;
@@ -12,7 +13,9 @@ struct SScannable {
 };
 
 static const SScannable aFunctions[] = {
-        { Signatures::Script, &Teardown::Constructors::Script, "CScript::CScript" },
+        { Signatures::Script, &Teardown::Constructors::tdScript, "CScript::CScript" },
+        { Signatures::RegisterGameFunctions, &Teardown::Constructors::tdRegisterGameFunctions, "CScript::CScript" },
+        { Signatures::RegisterLuaFunctionSC, &Teardown::Constructors::tdRegisterLuaFunction, "CScript::CScript" },
 };
 
 void Teardown::GetFunctionAddresses() {

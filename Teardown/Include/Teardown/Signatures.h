@@ -6,7 +6,15 @@ namespace Signatures {
     /////////////////////////
     //     Memory Sigs     //
     /////////////////////////
-    // (TODO)
+    inline CSignature malloc_base("\xE8\x00\x00\x00\x00\xEB\x1F\x48\x85\xDB", "x????xxxxx", true); // Outdated (v0.9.2)
+    inline CSignature free_base("\xE8\x00\x00\x00\x00\xEB\x1F\x48\x85\xDB", "x????xxxxx", true); // Outdated (v0.9.2)
+
+    ///////////////////////////
+    //     Lua Functions     //
+    ///////////////////////////
+    inline CSignature RegisterGameFunctions("\x48\x89\x5C\x24\x00\x57\x48\x83\xEC\x30\x48\x8D\x79\x30", "xxxx?xxxxxxxxx", false);
+    inline CSignature RegisterLuaFunctionSC("\x48\x89\x5C\x24\x00\x57\x48\x83\xEC\x30\x48\x8D\x79\x30", "xxxx?xxxxxxxxx");
+    //inline CSignature luaL_loadbuffer("\xE8\x00\x00\x00\x00\x85\xC0\x75\x07\xB8\x00\x00\x00\x00\xEB\x57", "x????xxxxx????xx", true); // Outdated (v0.9.2)
 
     /////////////////////////
     ///     Callbacks      //

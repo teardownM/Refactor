@@ -21,11 +21,14 @@ project "Launcher"
     includedirs {
         "Include",
         "../Shared/Include",
-        "../Vendor/spdlog/include"
+        "../Vendor/spdlog/include",
+		"../lua-5.1.4",
+		"../glm"
     }
 
     libdirs {
-        "../Shared/Lib"
+        "../Shared/Lib",
+		"../Build/%{cfg.buildcfg}/lua-5.1.4"
     }
 
     links {
@@ -38,7 +41,8 @@ project "Launcher"
 		"ssl%{cfg.buildcfg}",
 		"libprotobuf%{cfg.buildcfg}",
 		"cpprest%{cfg.buildcfg}",
-		"nakama-cpp%{cfg.buildcfg}"
+		"nakama-cpp%{cfg.buildcfg}",
+		"lua-5.1.4"
     }
 
     filter "system:windows"

@@ -24,5 +24,7 @@ workspace "TDM"
     --flags "FatalWarnings"
     --warnings "Extra"
 
+include "lua-5.1.4"
+include "glm"
 include "Teardown"
 include "Launcher"
