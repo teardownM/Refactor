@@ -7,14 +7,23 @@
 #include "Teardown/Functions.h"
 #include "Teardown/Menu.h"
 
+#include <libloaderapi.h>
+
+#define DLL_EXPORT extern "C" __declspec(dllexport)
+
 [[maybe_unused]] __declspec(dllexport) int __stdcall _() { return 0; }
+
+DLL_EXPORT int ReloadUI() {
+    LOG_INFO("Reloading UI");
+    ExitThread(0);
+}
 
 ///////////////////////////////////
 ///////     Functions     /////////
 ///////////////////////////////////
 void Shutdown(HMODULE hModule, DWORD reason) {
     Teardown::Menu::Revert();
-    LOG_INFO("Goodbye :)\nExit code: {}", reason);
+    LOG_INFO("Goodbye :) Exit code: {}", reason);
 
 #ifdef DEBUG
     ::Utilities::Console::Close();
@@ -22,7 +31,7 @@ void Shutdown(HMODULE hModule, DWORD reason) {
     FreeLibraryAndExitThread(hModule, reason);
 }
 
-DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
+DWORD WINAPI StartRoutine(HMODULE hModule) {
     g_Module = GetModuleHandle(nullptr);
 
 #ifdef _DEBUG
@@ -38,14 +47,12 @@ DWORD WINAPI StartRoutine([[maybe_unused]] HMODULE hModule) {
     Teardown::Path = std::filesystem::current_path().string();
     if (Teardown::Menu::Set() != 0) {
         LOG_ERROR("Failed to create menu");
-        Shutdown(reinterpret_cast<HMODULE>(g_Module), 1);
-        return 1;
+        Shutdown(reinterpret_cast<HMODULE>(hModule), 1);
     }
 
-    Teardown::GetFunctionAddresses();
+    LOG_INFO("Successfully Loaded Teardown Multiplayer");
 
-    LOG_INFO("We are in bois ;)");
-	
+    Teardown::GetFunctionAddresses();
     return 0;
 }
 
@@ -58,11 +65,12 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ulReason, [[maybe_unused]] LPVOID l
             DisableThreadLibraryCalls(hModule);
             CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(StartRoutine), hModule, 0, nullptr);
             break;
-        case DLL_PROCESS_DETACH: {
-            Shutdown(reinterpret_cast<HMODULE>(g_Module), 0);
+        case DLL_PROCESS_DETACH:
+            Shutdown(reinterpret_cast<HMODULE>(hModule), 0);
             break;
-        } default: break;
-    }
+        default:
+            break;
+    };
 
     return TRUE;
 }
