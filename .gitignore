@@ -371,5 +371,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Shared (deps, do not reupload changes. Keep this!)
+Shared
+
 # Vendor, linked dep. DO NOT REMOVE.
 Vendor
